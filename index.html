@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Link Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #007bff;
+        }
+        input, button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .links-section {
+            margin: 20px 0;
+        }
+        .link-card {
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #007bff;
+            flex-wrap: wrap;
+        }
+        .special-link-card {
+            background-color: #ffffe0;
+            border: 2px solid orange;
+        }
+        .emergency-link-card {
+            background-color: #ffe6e6;
+            border: 2px solid red;
+        }
+        .link-card h4 {
+            margin: 0;
+            font-size: 18px;
+            color: #007bff;
+            width: 100%;
+            text-align: left;
+            padding-bottom: 5px;
+        }
+        .special-link-card h4 {
+            color: orange;
+        }
+        .emergency-link-card h4 {
+            color: red;
+        }
+        .link-card p {
+            margin: 5px 0 0;
+            word-wrap: break-word;
+            color: #333;
+            width: 75%;
+            font-size: 15px;
+        }
+        .copy-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+            width: 20%;
+            text-align: center;
+        }
+        .copy-btn:hover {
+            background-color: #218838;
+        }
+        .copied {
+            background-color: #6c757d !important;
+            cursor: default;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            font-size: 16px;
+        }
+        .emergency-info {
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+by: gabriele donno
+<div class="container">
+    <h2>Track Link Generator</h2>
+    <input type="text" id="mainLink" placeholder="Inserisci il link principale qui">
+    <button onclick="generateLinks()">Genera Links</button>
+
+    <div id="errorMessage" class="error"></div>
+    <div id="linksContainer" class="links-section"></div>
+</div>
+
+<script>
+    function generateLinks() {
+        const mainLink = document.getElementById('mainLink').value.trim();
+        const errorMessage = document.getElementById('errorMessage');
+        const container = document.getElementById('linksContainer');
+
+        // Pulisce gli errori e il contenuto precedente
+        errorMessage.innerHTML = '';
+        container.innerHTML = '';
+
+        // Verifica se il link termina con ".html"
+        if (!mainLink.endsWith('.html')) {
+            errorMessage.innerHTML = 'Errore: Il link deve terminare con ".html"';
+            return;
+        }
+
+        // Lista delle pagine con i rispettivi parametri di tracciamento
+        const pages = [
+            { name: 'Sofia', param: '?utm_source=P0100&utm_medium=P0100_sofia&utm_campaign=P0100_sofia' },
+            { name: 'Raggio', param: '?utm_source=P0100&utm_medium=P0100_raggio&utm_campaign=P0100_raggio' },
+            { name: 'Sofia 2', param: '?utm_source=P0100&utm_medium=P0100_sofia2&utm_campaign=P0100_sofia2' },
+            { name: 'Sofia 3', param: '?utm_source=P0100&utm_medium=P0100_sofia3&utm_campaign=P0100_sofia3' },
+            { name: 'Sofia 4', param: '?utm_source=P0100&utm_medium=P0100_sofia4&utm_campaign=P0100_sofia4' },
+            { name: 'Sofia 5', param: '?utm_source=P0100&utm_medium=P0100_sofia5&utm_campaign=P0100_sofia5' },
+            { name: 'Sofia 6', param: '?utm_source=P0100&utm_medium=P0100_sofia6&utm_campaign=P0100_sofia6' },
+            { name: 'Mariella', param: '?utm_source=P0100&utm_medium=P0100_FFmary&utm_campaign=P0100_FFmary' },
+            { name: 'Selune', param: '?utm_source=P0100&utm_medium=P0100_selune&utm_campaign=P0100_selune' },
+            { name: 'Sonia', param: '?utm_source=P0100&utm_medium=P0100_FF_sonia&utm_campaign=P0100_FF_sonia' }
+        ];
+
+        // Creiamo i link e li visualizziamo separatamente per ogni pagina
+        pages.forEach(page => {
+            const link = `${mainLink}${page.param}`;
+
+            // Creiamo un div per ogni link
+            const linkCard = document.createElement('div');
+            linkCard.classList.add('link-card');
+
+            // Titolo della pagina
+            const pageTitle = document.createElement('h4');
+            pageTitle.innerText = page.name;
+            linkCard.appendChild(pageTitle);
+
+            // Paragrafo con il link generato
+            const linkText = document.createElement('p');
+            linkText.innerText = link;
+            linkCard.appendChild(linkText);
+
+            // Pulsante "Copia"
+            const copyBtn = document.createElement('button');
+            copyBtn.classList.add('copy-btn');
+            copyBtn.innerText = 'Copia';
+            copyBtn.onclick = () => copyToClipboard(link, copyBtn);
+            linkCard.appendChild(copyBtn);
+
+            // Aggiungiamo il div al contenitore principale
+            container.appendChild(linkCard);
+        });
+
+        // Sezione speciale per il link di MyTraffic
+        const specialLink = { name: 'MyTraffic', param: '?utm_source=P0100&utm_medium=P0100_xxFH&utm_campaign=P0100_xxFH' };
+        const specialLinkCard = document.createElement('div');
+        specialLinkCard.classList.add('link-card', 'special-link-card');
+
+        const specialTitle = document.createElement('h4');
+        specialTitle.innerText = specialLink.name;
+        specialLinkCard.appendChild(specialTitle);
+
+        const specialText = document.createElement('p');
+        specialText.innerText = `${mainLink}${specialLink.param}`;
+        specialLinkCard.appendChild(specialText);
+
+        const specialCopyBtn = document.createElement('button');
+
+        specialCopyBtn.classList.add('copy-btn');
+        specialCopyBtn.innerText = 'Copia';
+        specialCopyBtn.onclick = () => copyToClipboard(`${mainLink}${specialLink.param}`, specialCopyBtn);
+        specialLinkCard.appendChild(specialCopyBtn);
+
+        container.appendChild(specialLinkCard);
+ 
+        // Aggiungiamo i link di emergenza .................
+        const emergencyLinks = [
+            { name: 'Rete', param: '?utm_source=P0100&utm_medium=P0100_FF_rete&utm_campaign=P0100_FF_rete' },
+            { name: 'Giorno', param: '?utm_source=P0100&utm_medium=P0100_giorno&utm_campaign=P0100_giorno' },
+            { name: 'Papa', param: '?utm_source=P0100&utm_medium=P0100_FFpapa&utm_campaign=P0100_FFpapa' }
+        ];
+
+
+        emergencyLinks.forEach(link => {
+            const emergencyLink = `${mainLink}${link.param}`;
+
+            const emergencyCard = document.createElement('div');
+            emergencyCard.classList.add('link-card', 'emergency-link-card');
+
+            const emergencyTitle = document.createElement('h4');
+            emergencyTitle.innerText = link.name;
+            emergencyCard.appendChild(emergencyTitle);
+
+            const emergencyText = document.createElement('p');
+            emergencyText.innerText = emergencyLink;
+            emergencyCard.appendChild(emergencyText);
+
+            const emergencyCopyBtn = document.createElement('button');
+            emergencyCopyBtn.classList.add('copy-btn');
+            emergencyCopyBtn.innerText = 'Copia';
+            emergencyCopyBtn.onclick = () => confirmEmergencyCopy(emergencyLink, emergencyCopyBtn, link.name);
+            emergencyCard.appendChild(emergencyCopyBtn);
+
+            container.appendChild(emergencyCard);
+        });
+    }
+
+    function copyToClipboard(text, btn) {
+        navigator.clipboard.writeText(text).then(() => {
+            btn.innerText = 'Copiato!';
+            btn.classList.add('copied');
+            btn.disabled = true;
+        });
+    }
+
+    function confirmEmergencyCopy(link, btn, name) {
+        const isConfirmed = window.confirm(`Sei sicuro di voler copiare e usare il link per ${name}?`);
+        if (isConfirmed) {
+            copyToClipboard(link, btn);
+        }
+    }
+</script>
+
+</body>
+</html>
