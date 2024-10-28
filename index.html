@@ -144,6 +144,12 @@ by: gabriele donno
             return;
         }
 
+        // Verifica se il link ha spazi ".html"
+        if (mainLink.includes(' ')) {
+        errorMessage.innerHTML = 'Errore: Il link non deve contenere spazi';
+        return;
+}
+
         // Lista delle pagine con i rispettivi parametri di tracciamento
         const pages = [
             { name: 'Sofia', param: '?utm_source=P0100&utm_medium=P0100_sofia&utm_campaign=P0100_sofia' },
