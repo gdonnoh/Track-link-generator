@@ -141,11 +141,6 @@ by: gdonnoh@gmail.com
         //git commit -m "Descrizione delle modifiche"
         //git push origin main
 
-        // Verifica se il link termina con ".html"
-        if (!mainLink.endsWith('.html')) {
-            errorMessage.innerHTML = 'Errore: Il link deve terminare con ".html"';
-            return;
-        }
 
         // Verifica se il link ha spazi ".html"
         if (mainLink.includes(' ')) {
