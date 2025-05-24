@@ -242,7 +242,30 @@ by: gdonnoh@gmail.com
 
             container.appendChild(emergencyCard);
         });
+                // Link finale di Gdonnoh
+        const gdonnohLink = `${mainLink}?utm_source=P0100&utm_medium=P0100_FF_gdonnoh&utm_campaign=P0100_FF_gdonnoh`;
+
+        const gdonnohCard = document.createElement('div');
+        gdonnohCard.style.textAlign = 'center';
+        gdonnohCard.style.marginTop = '30px';
+
+        const gdonnohButton = document.createElement('button');
+        gdonnohButton.innerText = 'Vedi anche il track di gdonnoh';
+        gdonnohButton.style.fontSize = '13px';
+        gdonnohButton.style.backgroundColor = '#444';
+        gdonnohButton.style.border = 'none';
+        gdonnohButton.style.padding = '8px 12px';
+        gdonnohButton.style.borderRadius = '5px';
+        gdonnohButton.style.color = 'white';
+        gdonnohButton.style.cursor = 'pointer';
+        gdonnohButton.onclick = () => copyToClipboard(gdonnohLink, gdonnohButton);
+
+        gdonnohCard.appendChild(gdonnohButton);
+        container.appendChild(gdonnohCard);
+
     }
+
+    
 
     function copyToClipboard(text, btn) {
         navigator.clipboard.writeText(text).then(() => {
