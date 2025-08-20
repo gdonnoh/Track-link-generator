@@ -25,7 +25,7 @@
             text-align: center;
             color: #007bff;
         }
-        input, button {
+        input[type="text"], button {
             width: calc(100% - 20px);
             padding: 10px;
             margin: 10px 0;
@@ -109,11 +109,74 @@
             text-align: center;
             font-size: 16px;
         }
-        .emergency-info {
-            color: red;
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 16px;
+        .filters {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+        .right-sidebar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 170px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            padding: 8px 10px;
+            max-height: calc(100vh - 40px);
+            overflow: auto;
+            transform: translateX(210px);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.25s ease, opacity 0.2s ease;
+        }
+        .right-sidebar.open {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .right-sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .right-sidebar-header button {
+            width: auto;
+            margin: 0;
+            padding: 4px 8px;
+            font-size: 12px;
+            background: #eee;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        .floating-filters-btn {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: auto;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 14px;
+        }
+        @media (max-width: 820px) {
+            .right-sidebar { position: fixed; right: 10px; left: 10px; width: auto; }
+            .floating-filters-btn { right: 10px; bottom: 10px; }
         }
     </style>
 </head>
@@ -121,6 +184,7 @@
 by: gdonnoh@gmail.com
 <div class="container">
     <h2>Track Link Generator</h2>
+
     <input type="text" id="mainLink" placeholder="Inserisci il link principale qui">
     <button onclick="generateLinks()">Genera Links</button>
 
@@ -128,7 +192,149 @@ by: gdonnoh@gmail.com
     <div id="linksContainer" class="links-section"></div>
 </div>
 
+<aside class="right-sidebar" id="filtersPanel" aria-hidden="true">
+    <div class="right-sidebar-header">
+        <span>Filtri</span>
+        <button type="button" id="closeFilters">Chiudi</button>
+    </div>
+    <div id="filters" class="links-section" style="margin: 0;"></div>
+</aside>
+<button id="toggleFilters" class="floating-filters-btn" aria-expanded="false" aria-controls="filtersPanel">Filtri</button>
+
 <script>
+    // Dati globali dei track
+    const pages = [
+        { name: 'Sofia', param: '?utm_source=P0100&utm_medium=P0100_sofia&utm_campaign=P0100_sofia' },
+        { name: 'Raggio', param: '?utm_source=P0100&utm_medium=P0100_FF_raggiodisole&utm_campaign=P0100_FF_raggiodisole' },
+        { name: 'Sofia 2', param: '?utm_source=P0100&utm_medium=P0100_sofia2&utm_campaign=P0100_sofia2' },
+        { name: 'Sofia 4', param: '?utm_source=P0100&utm_medium=P0100_sofia4&utm_campaign=P0100_sofia4' },
+        { name: 'Sofia 5', param: '?utm_source=P0100&utm_medium=P0100_sofia5&utm_campaign=P0100_sofia5' },
+        { name: 'Sofia 6', param: '?utm_source=P0100&utm_medium=P0100_sofia6&utm_campaign=P0100_sofia6' },
+        { name: 'Mary', param: '?utm_source=P0100&utm_medium=P0100_FFmary&utm_campaign=P0100_FFmary' },
+        { name: 'Selune', param: '?utm_source=P0100&utm_medium=P0100_selune&utm_campaign=P0100_selune' },
+        { name: 'Incredibile', param: '?utm_source=P0100&utm_medium=P0100_FF_incredibile&utm_campaign=P0100_FF_incredibile' }
+    ];
+
+    const specialLink = { name: 'MyTraffic', param: '?utm_source=P0100&utm_medium=P0100_xxFH&utm_campaign=P0100_xxFH' };
+
+    const emergencyLinks = [
+        { name: 'Papa', param: '?utm_source=P0100&utm_medium=P0100_FFpapa&utm_campaign=P0100_FFpapa' },
+        { name: 'Test', param: '?utm_source=P0100&utm_medium=P0100_FF_Cosimo&utm_campaign=P0100_FF_Cosimo' },
+        { name: 'Giorno', param: '?utm_source=P0100&utm_medium=P0100_FF_giorno&utm_campaign=P0100_FF_giorno' }
+    ];
+
+    const gdonnohTrack = { name: 'gdonnoh', param: '?utm_source=P0100&utm_medium=P0100_FF_gdonnoh&utm_campaign=P0100_FF_gdonnoh' };
+
+    const FILTERS_STORAGE_KEY = 'tracklink_filters_v1';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        buildFilters();
+        setupFiltersToggle();
+    });
+
+    function slugify(text) {
+        return text.toString().toLowerCase().replace(/\s+/g, '-');
+    }
+
+    function loadSavedFilters() {
+        try {
+            const raw = localStorage.getItem(FILTERS_STORAGE_KEY);
+            if (!raw) return null;
+            const arr = JSON.parse(raw);
+            if (!Array.isArray(arr)) return null;
+            return new Set(arr);
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function saveFilters() {
+        const selected = Array.from(document.querySelectorAll('.track-filter'))
+            .filter(cb => cb.checked)
+            .map(cb => cb.dataset.name);
+        localStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(selected));
+    }
+
+    function buildFilters() {
+        const filtersRoot = document.getElementById('filters');
+        filtersRoot.innerHTML = '';
+
+        const filtersWrapper = document.createElement('div');
+        filtersWrapper.className = 'filters';
+
+        const saved = loadSavedFilters();
+
+        function addCheckbox(name) {
+            const id = `filter-${slugify(name)}`;
+            const wrap = document.createElement('div');
+            wrap.className = 'checkbox-item';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.className = 'track-filter';
+            cb.id = id;
+            cb.dataset.name = name;
+            cb.checked = saved ? saved.has(name) : true; // di default selezionato
+            const lbl = document.createElement('label');
+            lbl.htmlFor = id;
+            lbl.innerText = name;
+            wrap.appendChild(cb);
+            wrap.appendChild(lbl);
+            filtersWrapper.appendChild(wrap);
+        }
+
+        // Destra: tutti i track tranne Gdonnoh
+        pages.forEach(p => addCheckbox(p.name));
+        // niente checkbox per MyTraffic
+        // emergenza: escludi Papa e Test dal filtro (resta ad es. Giorno)
+        emergencyLinks
+            .filter(e => !['Papa', 'Test', 'Giorno'].includes(e.name))
+            .forEach(e => addCheckbox(e.name));
+
+        filtersRoot.appendChild(filtersWrapper);
+
+        // Eventi: ogni change aggiorna la lista e salva
+        filtersRoot.addEventListener('change', (e) => {
+            if (e.target && e.target.classList.contains('track-filter')) {
+                saveFilters();
+            }
+        });
+    }
+
+    function setupFiltersToggle() {
+        const panel = document.getElementById('filtersPanel');
+        const openBtn = document.getElementById('toggleFilters');
+        const closeBtn = document.getElementById('closeFilters');
+
+        function openPanel() {
+            panel.classList.add('open');
+            panel.setAttribute('aria-hidden', 'false');
+            openBtn.setAttribute('aria-expanded', 'true');
+        }
+        function closePanel() {
+            panel.classList.remove('open');
+            panel.setAttribute('aria-hidden', 'true');
+            openBtn.setAttribute('aria-expanded', 'false');
+        }
+        openBtn.addEventListener('click', () => {
+            if (panel.classList.contains('open')) closePanel(); else openPanel();
+        });
+        closeBtn.addEventListener('click', closePanel);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
+        document.addEventListener('click', (e) => {
+            if (!panel.contains(e.target) && e.target !== openBtn) {
+                closePanel();
+            }
+        }, true);
+    }
+
+    function getSelectedNames() {
+        const selected = new Set();
+        document.querySelectorAll('.track-filter').forEach(cb => {
+            if (cb.checked) selected.add(cb.dataset.name);
+        });
+        return selected;
+    }
+
     function generateLinks() {
         const mainLink = document.getElementById('mainLink').value.trim();
         const errorMessage = document.getElementById('errorMessage');
@@ -142,28 +348,17 @@ by: gdonnoh@gmail.com
         //git commit -m "Descrizione delle modifiche"
         //git push origin main
 
-
         // Verifica se il link ha spazi ".html"
         if (mainLink.includes(' ')) {
         errorMessage.innerHTML = 'Errore: Il link non deve contenere spazi';
         return;
 }
 
-        // Lista delle pagine con i rispettivi parametri di tracciamento
-        const pages = [
-            { name: 'Sofia', param: '?utm_source=P0100&utm_medium=P0100_sofia&utm_campaign=P0100_sofia' },
-            { name: 'Raggio', param: '?utm_source=P0100&utm_medium=P0100_FF_raggiodisole&utm_campaign=P0100_FF_raggiodisole' },
-            { name: 'Sofia 2', param: '?utm_source=P0100&utm_medium=P0100_sofia2&utm_campaign=P0100_sofia2' },
-            { name: 'Sofia 4', param: '?utm_source=P0100&utm_medium=P0100_sofia4&utm_campaign=P0100_sofia4' },
-            { name: 'Sofia 5', param: '?utm_source=P0100&utm_medium=P0100_sofia5&utm_campaign=P0100_sofia5' },
-            { name: 'Sofia 6', param: '?utm_source=P0100&utm_medium=P0100_sofia6&utm_campaign=P0100_sofia6' },
-            { name: 'Mary', param: '?utm_source=P0100&utm_medium=P0100_FFmary&utm_campaign=P0100_FFmary' },
-            { name: 'Selune', param: '?utm_source=P0100&utm_medium=P0100_selune&utm_campaign=P0100_selune' },
-            { name: 'Incredibile', param: '?utm_source=P0100&utm_medium=P0100_FF_incredibile&utm_campaign=P0100_FF_incredibile' }
-        ];
+        const selectedNames = getSelectedNames();
 
         // Creiamo i link e li visualizziamo separatamente per ogni pagina
         pages.forEach(page => {
+            if (!selectedNames.has(page.name)) return;
             const link = `${mainLink}${page.param}`;
 
             // Creiamo un div per ogni link
@@ -192,36 +387,33 @@ by: gdonnoh@gmail.com
         });
 
         // Sezione speciale per il link di MyTraffic
-        const specialLink = { name: 'MyTraffic', param: '?utm_source=P0100&utm_medium=P0100_xxFH&utm_campaign=P0100_xxFH' };
-        const specialLinkCard = document.createElement('div');
-        specialLinkCard.classList.add('link-card', 'special-link-card');
+        {
+            const specialLinkCard = document.createElement('div');
+            specialLinkCard.classList.add('link-card', 'special-link-card');
 
-        const specialTitle = document.createElement('h4');
-        specialTitle.innerText = specialLink.name;
-        specialLinkCard.appendChild(specialTitle);
+            const specialTitle = document.createElement('h4');
+            specialTitle.innerText = specialLink.name;
+            specialLinkCard.appendChild(specialTitle);
 
-        const specialText = document.createElement('p');
-        specialText.innerText = `${mainLink}${specialLink.param}`;
-        specialLinkCard.appendChild(specialText);
+            const specialText = document.createElement('p');
+            specialText.innerText = `${mainLink}${specialLink.param}`;
+            specialLinkCard.appendChild(specialText);
 
-        const specialCopyBtn = document.createElement('button');
+            const specialCopyBtn = document.createElement('button');
 
-        specialCopyBtn.classList.add('copy-btn');
-        specialCopyBtn.innerText = 'Copia';
-        specialCopyBtn.onclick = () => copyToClipboard(`${mainLink}${specialLink.param}`, specialCopyBtn);
-        specialLinkCard.appendChild(specialCopyBtn);
+            specialCopyBtn.classList.add('copy-btn');
+            specialCopyBtn.innerText = 'Copia';
+            specialCopyBtn.onclick = () => copyToClipboard(`${mainLink}${specialLink.param}`, specialCopyBtn);
+            specialLinkCard.appendChild(specialCopyBtn);
 
-        container.appendChild(specialLinkCard);
+            container.appendChild(specialLinkCard);
+        }
  
-        // Aggiungiamo i link di emergenza .................
-        const emergencyLinks = [
-            { name: 'Papa', param: '?utm_source=P0100&utm_medium=P0100_FFpapa&utm_campaign=P0100_FFpapa' },
-            { name: 'Test', param: '?utm_source=P0100&utm_medium=P0100_FF_Cosimo&utm_campaign=P0100_FF_Cosimo' },
-            { name: 'Giorno', param: '?utm_source=P0100&utm_medium=P0100_FF_giorno&utm_campaign=P0100_FF_giorno' }
-        ];
-
-
+        // Aggiungiamo i link di emergenza da mostrare in base ai filtri
         emergencyLinks.forEach(link => {
+            const cb = document.querySelector('#filter-' + slugify(link.name));
+            const isSelected = cb ? cb.checked : true; // se non ha checkbox (Papa, Test) => mostra
+            if (!isSelected) return;
             const emergencyLink = `${mainLink}${link.param}`;
 
             const emergencyCard = document.createElement('div');
@@ -243,9 +435,9 @@ by: gdonnoh@gmail.com
 
             container.appendChild(emergencyCard);
         });
-                // Link finale di Gdonnoh
-        const gdonnohLink = `${mainLink}?utm_source=P0100&utm_medium=P0100_FF_gdonnoh&utm_campaign=P0100_FF_gdonnoh`;
-
+        
+        // Link finale di Gdonnoh - sempre visibile
+        const gdonnohLink = `${mainLink}${gdonnohTrack.param}`;
         const gdonnohCard = document.createElement('div');
         gdonnohCard.style.textAlign = 'center';
         gdonnohCard.style.marginTop = '30px';
