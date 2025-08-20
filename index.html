@@ -166,13 +166,65 @@
             right: 20px;
             bottom: 20px;
             width: auto;
-            padding: 8px 12px;
+            padding: 10px 18px;
             border-radius: 999px;
-            background: #007bff;
+            background: linear-gradient(90deg, #007bff 0%, #1f7eff 45%, #54a0ff 70%, #9bc7ff 100%);
+            background-size: 250% 100%;
             color: #fff;
             border: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            font-size: 14px;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.22), 0 0 10px rgba(42,139,255,0.65), 0 0 26px rgba(42,139,255,0.45);
+            font-size: 16px;
+            position: fixed;
+            overflow: hidden;
+            animation: btn-gradient 2.6s ease infinite, btn-glow 1.8s ease-in-out infinite;
+        }
+        .floating-filters-btn::after {
+            content: "";
+            position: absolute;
+            top: -40%;
+            left: -60%;
+            width: 45%;
+            height: 200%;
+            background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(20deg);
+            animation: shine 2.2s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .floating-filters-btn::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background:
+                radial-gradient(7px 7px at 18% 28%, rgba(255,255,255,0.95), rgba(255,255,255,0) 60%),
+                radial-gradient(5px 5px at 68% 62%, rgba(255,255,255,0.9), rgba(255,255,255,0) 60%),
+                radial-gradient(6px 6px at 84% 34%, rgba(255,255,255,0.85), rgba(255,255,255,0) 60%),
+                radial-gradient(3px 3px at 40% 80%, rgba(255,255,255,0.8), rgba(255,255,255,0) 60%);
+            mix-blend-mode: screen;
+            animation: sparkles 2s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes btn-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes shine {
+            0% { transform: translateX(-130%) rotate(20deg); opacity: 0.0; }
+            35% { opacity: 1; }
+            100% { transform: translateX(230%) rotate(20deg); opacity: 0.0; }
+        }
+        @keyframes sparkles {
+            0% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%; opacity: 0.95; }
+            50% { background-position: 80% 20%, 40% 60%, 60% 30%, 20% 90%; opacity: 1; }
+            100% { background-position: 120% 40%, 80% 100%, 100% 60%, 80% 120%; opacity: 0.95; }
+        }
+        @keyframes btn-glow {
+            0%, 100% { box-shadow: 0 10px 24px rgba(0,0,0,0.22), 0 0 12px rgba(42,139,255,0.65), 0 0 28px rgba(42,139,255,0.45), 0 0 0 2px rgba(255,255,255,0.28); }
+            50% { box-shadow: 0 12px 30px rgba(0,0,0,0.24), 0 0 22px rgba(42,139,255,0.9), 0 0 48px rgba(42,139,255,0.6), 0 0 0 4px rgba(173,216,255,0.45); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .floating-filters-btn, .floating-filters-btn::before, .floating-filters-btn::after { animation: none; }
         }
         @media (max-width: 820px) {
             .right-sidebar { position: fixed; right: 10px; left: 10px; width: auto; }
