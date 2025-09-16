@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Track Link Generator</title>
-    <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA////ALCQHgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARERERERERABIiIRESIREAEiIhERIhEQAREiEREiERABESIRESIREAEiIhERIhEQASIREREiERABIhERESIREAEiIhEiIiIQASIiESIiIhABEREREREREAAAAAAAAAAAAAAAAAAAAAD//wAA//8AAP//AACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAP//AAD//wAA" rel="icon" type="image/x-icon">
+    <link
+        href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA////ALCQHgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARERERERERABIiIRESIREAEiIhERIhEQAREiEREiERABESIRESIREAEiIhERIhEQASIREREiERABIhERESIREAEiIhEiIiIQASIiESIiIhABEREREREREAAAAAAAAAAAAAAAAAAAAAD//wAA//8AAP//AACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAP//AAD//wAA"
+        rel="icon"
+        type="image/x-icon"
+    />
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -15,7 +19,6 @@
         .container {
             max-width: 700px;
             margin: 0 auto;
-            
             padding: 20px;
             background-color: white;
             border-radius: 10px;
@@ -25,7 +28,43 @@
             text-align: center;
             color: #007bff;
         }
-        input[type="text"], button {
+        .toggle-switch {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .toggle-switch input[type='checkbox'] {
+            width: 40px;
+            height: 20px;
+            appearance: none;
+            background: #ccc;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: background 0.3s;
+        }
+        .toggle-switch input[type='checkbox']:checked {
+            background: #28a745;
+        }
+        .toggle-switch input[type='checkbox']::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            top: 1px;
+            left: 1px;
+            transition: transform 0.3s;
+        }
+        .toggle-switch input[type='checkbox']:checked::after {
+            transform: translateX(20px);
+        }
+        input[type='text'],
+        button {
             width: calc(100% - 20px);
             padding: 10px;
             margin: 10px 0;
@@ -60,6 +99,10 @@
             background-color: #ffffe0;
             border: 2px solid orange;
         }
+        .altro-link-card {
+            background-color: #e6ffe6;
+            border: 2px solid green;
+        }
         .emergency-link-card {
             background-color: #ffe6e6;
             border: 2px solid red;
@@ -74,6 +117,9 @@
         }
         .special-link-card h4 {
             color: orange;
+        }
+        .altro-link-card h4 {
+            color: green;
         }
         .emergency-link-card h4 {
             color: red;
@@ -109,6 +155,7 @@
             text-align: center;
             font-size: 16px;
         }
+        /* Sidebar e pulsante filtri come nell'originale */
         .filters {
             display: flex;
             flex-direction: column;
@@ -120,7 +167,7 @@
             align-items: center;
             gap: 8px;
         }
-        .checkbox-item input[type="checkbox"] {
+        .checkbox-item input[type='checkbox'] {
             width: auto;
             margin: 0;
         }
@@ -131,7 +178,7 @@
             width: 170px;
             background: #fff;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
             padding: 8px 10px;
             max-height: calc(100vh - 40px);
             overflow: auto;
@@ -172,362 +219,450 @@
             background-size: 250% 100%;
             color: #fff;
             border: none;
-            box-shadow: 0 10px 24px rgba(0,0,0,0.22), 0 0 10px rgba(42,139,255,0.65), 0 0 26px rgba(42,139,255,0.45);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22), 0 0 10px rgba(42, 139, 255, 0.65),
+                0 0 26px rgba(42, 139, 255, 0.45);
             font-size: 16px;
             position: fixed;
             overflow: hidden;
             animation: btn-gradient 2.6s ease infinite, btn-glow 1.8s ease-in-out infinite;
         }
         .floating-filters-btn::after {
-            content: "";
+            content: '';
             position: absolute;
             top: -40%;
             left: -60%;
             width: 45%;
             height: 200%;
-            background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(
+                120deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.95) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
             transform: rotate(20deg);
             animation: shine 2.2s ease-in-out infinite;
             pointer-events: none;
         }
         .floating-filters-btn::before {
-            content: "";
+            content: '';
             position: absolute;
             inset: 0;
             border-radius: inherit;
             background:
-                radial-gradient(7px 7px at 18% 28%, rgba(255,255,255,0.95), rgba(255,255,255,0) 60%),
-                radial-gradient(5px 5px at 68% 62%, rgba(255,255,255,0.9), rgba(255,255,255,0) 60%),
-                radial-gradient(6px 6px at 84% 34%, rgba(255,255,255,0.85), rgba(255,255,255,0) 60%),
-                radial-gradient(3px 3px at 40% 80%, rgba(255,255,255,0.8), rgba(255,255,255,0) 60%);
+                radial-gradient(7px 7px at 18% 28%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 60%),
+                radial-gradient(5px 5px at 68% 62%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 60%),
+                radial-gradient(6px 6px at 84% 34%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 60%),
+                radial-gradient(3px 3px at 40% 80%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 60%);
             mix-blend-mode: screen;
             animation: sparkles 2s linear infinite;
             pointer-events: none;
         }
         @keyframes btn-gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
         @keyframes shine {
-            0% { transform: translateX(-130%) rotate(20deg); opacity: 0.0; }
-            35% { opacity: 1; }
-            100% { transform: translateX(230%) rotate(20deg); opacity: 0.0; }
+            0% {
+                transform: translateX(-130%) rotate(20deg);
+                opacity: 0;
+            }
+            35% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(230%) rotate(20deg);
+                opacity: 0;
+            }
         }
         @keyframes sparkles {
-            0% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%; opacity: 0.95; }
-            50% { background-position: 80% 20%, 40% 60%, 60% 30%, 20% 90%; opacity: 1; }
-            100% { background-position: 120% 40%, 80% 100%, 100% 60%, 80% 120%; opacity: 0.95; }
+            0% {
+                background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+                opacity: 0.95;
+            }
+            50% {
+                background-position: 80% 20%, 40% 60%, 60% 30%, 20% 90%;
+                opacity: 1;
+            }
+            100% {
+                background-position: 120% 40%, 80% 100%, 100% 60%, 80% 120%;
+                opacity: 0.95;
+            }
         }
         @keyframes btn-glow {
-            0%, 100% { box-shadow: 0 10px 24px rgba(0,0,0,0.22), 0 0 12px rgba(42,139,255,0.65), 0 0 28px rgba(42,139,255,0.45), 0 0 0 2px rgba(255,255,255,0.28); }
-            50% { box-shadow: 0 12px 30px rgba(0,0,0,0.24), 0 0 22px rgba(42,139,255,0.9), 0 0 48px rgba(42,139,255,0.6), 0 0 0 4px rgba(173,216,255,0.45); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .floating-filters-btn, .floating-filters-btn::before, .floating-filters-btn::after { animation: none; }
-        }
-        @media (max-width: 820px) {
-            .right-sidebar { position: fixed; right: 10px; left: 10px; width: auto; }
-            .floating-filters-btn { right: 10px; bottom: 10px; }
+            0%,
+            100% {
+                box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22), 0 0 12px rgba(42, 139, 255, 0.65),
+                    0 0 28px rgba(42, 139, 255, 0.45), 0 0 0 2px rgba(255, 255, 255, 0.28);
+            }
+            50% {
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24), 0 0 22px rgba(42, 139, 255, 0.9),
+                    0 0 48px rgba(42, 139, 255, 0.6), 0 0 0 4px rgba(173, 216, 255, 0.45);
+            }
         }
     </style>
 </head>
 <body>
-by: gdonnoh@gmail.com
-<div class="container">
-    <h2>Track Link Generator</h2>
+    by: gdonnoh@gmail.com
+    <div class="container">
+        <h2>Track Link Generator</h2>
+        <div class="toggle-switch">
+            <label for="toggleMode">Altro</label>
+            <input type="checkbox" id="toggleMode" checked />
+            <label for="toggleMode">MyTraffic</label>
+        </div>
 
-    <input type="text" id="mainLink" placeholder="Inserisci il link principale qui">
-    <button onclick="generateLinks()">Genera Links</button>
+        <input type="text" id="mainLink" placeholder="Inserisci il link principale qui" />
+        <button id="generateBtn" onclick="generateLinks()">Genera Links</button>
 
-    <div id="errorMessage" class="error"></div>
-    <div id="linksContainer" class="links-section"></div>
-</div>
-
-<aside class="right-sidebar" id="filtersPanel" aria-hidden="true">
-    <div class="right-sidebar-header">
-        <span>Filtri</span>
-        <button type="button" id="closeFilters">Chiudi</button>
+        <div id="errorMessage" class="error"></div>
+        <div id="linksContainer" class="links-section"></div>
     </div>
-    <div id="filters" class="links-section" style="margin: 0;"></div>
-</aside>
-<button id="toggleFilters" class="floating-filters-btn" aria-expanded="false" aria-controls="filtersPanel">Filtri</button>
 
-<script>
-    // Dati globali dei track
-    const pages = [
-        { name: 'Sofia', param: '?utm_source=P0100&utm_medium=P0100_sofia&utm_campaign=P0100_sofia' },
-        { name: 'Raggio', param: '?utm_source=P0100&utm_medium=P0100_FF_raggiodisole&utm_campaign=P0100_FF_raggiodisole' },
-        { name: 'Sofia 2', param: '?utm_source=P0100&utm_medium=P0100_sofia2&utm_campaign=P0100_sofia2' },
-        { name: 'Sofia 4', param: '?utm_source=P0100&utm_medium=P0100_sofia4&utm_campaign=P0100_sofia4' },
-        { name: 'Sofia 5', param: '?utm_source=P0100&utm_medium=P0100_sofia5&utm_campaign=P0100_sofia5' },
-        { name: 'Sofia 6', param: '?utm_source=P0100&utm_medium=P0100_sofia6&utm_campaign=P0100_sofia6' },
-        { name: 'Mary', param: '?utm_source=P0100&utm_medium=P0100_FFmary&utm_campaign=P0100_FFmary' },
-        { name: 'Selune', param: '?utm_source=P0100&utm_medium=P0100_selune&utm_campaign=P0100_selune' },
-        { name: 'Incredibile', param: '?utm_source=P0100&utm_medium=P0100_FF_incredibile&utm_campaign=P0100_FF_incredibile' }
-    ];
+    <aside class="right-sidebar" id="filtersPanel" aria-hidden="true">
+        <div class="right-sidebar-header">
+            <span>Filtri</span>
+            <button type="button" id="closeFilters">Chiudi</button>
+        </div>
+        <div id="filters" class="links-section" style="margin: 0;"></div>
+    </aside>
+    <button
+        id="toggleFilters"
+        class="floating-filters-btn"
+        aria-expanded="false"
+        aria-controls="filtersPanel"
+    >
+        Filtri
+    </button>
 
-    const specialLink = { name: 'MyTraffic', param: '?utm_source=P0100&utm_medium=P0100_xxFH&utm_campaign=P0100_xxFH' };
+    <script>
+        // =========================
+        // Dati globali
+        // =========================
+        const pages = [
+            { name: 'Sofia', param: '?utm_source=P0100&utm_medium=P0100_sofia&utm_campaign=P0100_sofia' },
+            { name: 'Raggio', param: '?utm_source=P0100&utm_medium=P0100_FF_raggiodisole&utm_campaign=P0100_FF_raggiodisole' },
+            { name: 'Sofia 2', param: '?utm_source=P0100&utm_medium=P0100_sofia2&utm_campaign=P0100_sofia2' },
+            { name: 'Sofia 4', param: '?utm_source=P0100&utm_medium=P0100_sofia4&utm_campaign=P0100_sofia4' },
+            { name: 'Sofia 5', param: '?utm_source=P0100&utm_medium=P0100_sofia5&utm_campaign=P0100_sofia5' },
+            { name: 'Sofia 6', param: '?utm_source=P0100&utm_medium=P0100_sofia6&utm_campaign=P0100_sofia6' },
+            { name: 'Mary', param: '?utm_source=P0100&utm_medium=P0100_FFmary&utm_campaign=P0100_FFmary' },
+            { name: 'Selune', param: '?utm_source=P0100&utm_medium=P0100_selune&utm_campaign=P0100_selune' },
+            { name: 'Incredibile', param: '?utm_source=P0100&utm_medium=P0100_FF_incredibile&utm_campaign=P0100_FF_incredibile' },
+        ];
 
-    const emergencyLinks = [
-        { name: 'Papa', param: '?utm_source=P0100&utm_medium=P0100_FFpapa&utm_campaign=P0100_FFpapa' },
-        { name: 'Test', param: '?utm_source=P0100&utm_medium=P0100_FF_Cosimo&utm_campaign=P0100_FF_Cosimo' },
-        { name: 'Giorno', param: '?utm_source=P0100&utm_medium=P0100_FF_giorno&utm_campaign=P0100_FF_giorno' }
-    ];
+        const specialLink = {
+            name: 'MyTraffic',
+            param: '?utm_source=P0100&utm_medium=P0100_xxFH&utm_campaign=P0100_xxFH',
+        };
 
-    const gdonnohTrack = { name: 'Sofia3', param: '?utm_source=P0100&utm_medium=P0100_Sofia3&utm_campaign=P0100_Sofia3' };
+        const emergencyLinks = [
+            { name: 'Papa', param: '?utm_source=P0100&utm_medium=P0100_FFpapa&utm_campaign=P0100_FFpapa' },
+            { name: 'Test', param: '?utm_source=P0100&utm_medium=P0100_FF_Cosimo&utm_campaign=P0100_FF_Cosimo' },
+            { name: 'Giorno', param: '?utm_source=P0100&utm_medium=P0100_FF_giorno&utm_campaign=P0100_FF_giorno' },
+        ];
 
-    const FILTERS_STORAGE_KEY = 'tracklink_filters_v1';
+        const altroLinks = [
+            { name: 'Sofia3', param: '?utm_source=P0100&utm_medium=P0100_Sofia3&utm_campaign=P0100_Sofia3' },
+            { name: 'Ilda', param: '?utm_source=P0100&utm_medium=P0100_FF_Ilda83&utm_campaign=P0100_FF_Ilda83' },
+            { name: 'Storia', param: '?utm_source=P0100&utm_medium=P0100_FF_STORIA&utm_campaign=P0100_FF_STORIA' },
+        ];
 
-    document.addEventListener('DOMContentLoaded', () => {
-        buildFilters();
-        setupFiltersToggle();
-    });
+        const FILTERS_STORAGE_KEY = 'tracklink_filters_v1';
+        let showMyTraffic = true; // true => MyTraffic, false => Altro
 
-    function slugify(text) {
-        return text.toString().toLowerCase().replace(/\s+/g, '-');
-    }
+        // =========================
+        // Setup iniziale
+        // =========================
+        document.addEventListener('DOMContentLoaded', () => {
+            buildFilters();
+            setupFiltersToggle();
+            toggleFiltersVisibility();
+            // (Test non intrusivo) Sanity checks in console
+            runSanityTests();
+        });
 
-    function loadSavedFilters() {
-        try {
-            const raw = localStorage.getItem(FILTERS_STORAGE_KEY);
-            if (!raw) return null;
-            const arr = JSON.parse(raw);
-            if (!Array.isArray(arr)) return null;
-            return new Set(arr);
-        } catch (_) {
-            return null;
-        }
-    }
+        document.getElementById('toggleMode').addEventListener('change', (e) => {
+            showMyTraffic = e.target.checked;
+            toggleFiltersVisibility();
+            // Non generiamo automaticamente: lasciamo che l'utente prema il bottone
+        });
 
-    function saveFilters() {
-        const selected = Array.from(document.querySelectorAll('.track-filter'))
-            .filter(cb => cb.checked)
-            .map(cb => cb.dataset.name);
-        localStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(selected));
-    }
-
-    function buildFilters() {
-        const filtersRoot = document.getElementById('filters');
-        filtersRoot.innerHTML = '';
-
-        const filtersWrapper = document.createElement('div');
-        filtersWrapper.className = 'filters';
-
-        const saved = loadSavedFilters();
-
-        function addCheckbox(name) {
-            const id = `filter-${slugify(name)}`;
-            const wrap = document.createElement('div');
-            wrap.className = 'checkbox-item';
-            const cb = document.createElement('input');
-            cb.type = 'checkbox';
-            cb.className = 'track-filter';
-            cb.id = id;
-            cb.dataset.name = name;
-            cb.checked = saved ? saved.has(name) : true; // di default selezionato
-            const lbl = document.createElement('label');
-            lbl.htmlFor = id;
-            lbl.innerText = name;
-            wrap.appendChild(cb);
-            wrap.appendChild(lbl);
-            filtersWrapper.appendChild(wrap);
+        // =========================
+        // Utilità filtri (sidebar)
+        // =========================
+        function slugify(text) {
+            return text.toString().toLowerCase().replace(/\s+/g, '-');
         }
 
-        // Destra: tutti i track tranne Gdonnoh
-        pages.forEach(p => addCheckbox(p.name));
-        // niente checkbox per MyTraffic
-        // emergenza: escludi Papa e Test dal filtro (resta ad es. Giorno)
-        emergencyLinks
-            .filter(e => !['Papa', 'Test', 'Giorno'].includes(e.name))
-            .forEach(e => addCheckbox(e.name));
-
-        filtersRoot.appendChild(filtersWrapper);
-
-        // Eventi: ogni change aggiorna la lista e salva
-        filtersRoot.addEventListener('change', (e) => {
-            if (e.target && e.target.classList.contains('track-filter')) {
-                saveFilters();
+        function loadSavedFilters() {
+            try {
+                const raw = localStorage.getItem(FILTERS_STORAGE_KEY);
+                if (!raw) return null;
+                const arr = JSON.parse(raw);
+                if (!Array.isArray(arr)) return null;
+                return new Set(arr);
+            } catch (_) {
+                return null;
             }
-        });
-    }
-
-    function setupFiltersToggle() {
-        const panel = document.getElementById('filtersPanel');
-        const openBtn = document.getElementById('toggleFilters');
-        const closeBtn = document.getElementById('closeFilters');
-
-        function openPanel() {
-            panel.classList.add('open');
-            panel.setAttribute('aria-hidden', 'false');
-            openBtn.setAttribute('aria-expanded', 'true');
         }
-        function closePanel() {
-            panel.classList.remove('open');
-            panel.setAttribute('aria-hidden', 'true');
-            openBtn.setAttribute('aria-expanded', 'false');
+
+        function saveFilters() {
+            const selected = Array.from(document.querySelectorAll('.track-filter'))
+                .filter((cb) => cb.checked)
+                .map((cb) => cb.dataset.name);
+            localStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(selected));
         }
-        openBtn.addEventListener('click', () => {
-            if (panel.classList.contains('open')) closePanel(); else openPanel();
-        });
-        closeBtn.addEventListener('click', closePanel);
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
-        document.addEventListener('click', (e) => {
-            if (!panel.contains(e.target) && e.target !== openBtn) {
-                closePanel();
+
+        function buildFilters() {
+            const filtersRoot = document.getElementById('filters');
+            filtersRoot.innerHTML = '';
+
+            const filtersWrapper = document.createElement('div');
+            filtersWrapper.className = 'filters';
+
+            const saved = loadSavedFilters();
+
+            function addCheckbox(name) {
+                const id = `filter-${slugify(name)}`;
+                const wrap = document.createElement('div');
+                wrap.className = 'checkbox-item';
+
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.className = 'track-filter';
+                cb.id = id;
+                cb.dataset.name = name;
+                cb.checked = saved ? saved.has(name) : true; // di default selezionato
+
+                const lbl = document.createElement('label');
+                lbl.htmlFor = id;
+                lbl.innerText = name;
+
+                wrap.appendChild(cb);
+                wrap.appendChild(lbl);
+                filtersWrapper.appendChild(wrap);
             }
-        }, true);
-    }
 
-    function getSelectedNames() {
-        const selected = new Set();
-        document.querySelectorAll('.track-filter').forEach(cb => {
-            if (cb.checked) selected.add(cb.dataset.name);
-        });
-        return selected;
-    }
+            // A destra: tutti i track normali
+            pages.forEach((p) => addCheckbox(p.name));
 
-    function generateLinks() {
-        const mainLink = document.getElementById('mainLink').value.trim();
-        const errorMessage = document.getElementById('errorMessage');
-        const container = document.getElementById('linksContainer');
+            filtersRoot.appendChild(filtersWrapper);
 
-        // Pulisce gli errori e il contenuto precedente
-        errorMessage.innerHTML = '';
-        container.innerHTML = '';
-        
-        //git add .
-        //git commit -m "Descrizione delle modifiche"
-        //git push origin main
+            // Eventi: ogni change salva lo stato
+            filtersRoot.addEventListener('change', (e) => {
+                if (e.target && e.target.classList.contains('track-filter')) {
+                    saveFilters();
+                }
+            });
+        }
 
-        // Verifica se il link ha spazi ".html"
-        if (mainLink.includes(' ')) {
-        errorMessage.innerHTML = 'Errore: Il link non deve contenere spazi';
-        return;
-}
+        function setupFiltersToggle() {
+            const panel = document.getElementById('filtersPanel');
+            const openBtn = document.getElementById('toggleFilters');
+            const closeBtn = document.getElementById('closeFilters');
 
-        const selectedNames = getSelectedNames();
+            function openPanel() {
+                panel.classList.add('open');
+                panel.setAttribute('aria-hidden', 'false');
+                openBtn.setAttribute('aria-expanded', 'true');
+            }
 
-        // Creiamo i link e li visualizziamo separatamente per ogni pagina
-        pages.forEach(page => {
-            if (!selectedNames.has(page.name)) return;
-            const link = `${mainLink}${page.param}`;
+            function closePanel() {
+                panel.classList.remove('open');
+                panel.setAttribute('aria-hidden', 'true');
+                openBtn.setAttribute('aria-expanded', 'false');
+            }
 
-            // Creiamo un div per ogni link
+            openBtn.addEventListener('click', () => {
+                if (panel.classList.contains('open')) closePanel();
+                else openPanel();
+            });
+
+            closeBtn.addEventListener('click', closePanel);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closePanel();
+            });
+
+            document.addEventListener(
+                'click',
+                (e) => {
+                    if (!panel.contains(e.target) && e.target !== openBtn) {
+                        closePanel();
+                    }
+                },
+                true
+            );
+        }
+
+        function toggleFiltersVisibility() {
+            const panel = document.getElementById('filtersPanel');
+            const openBtn = document.getElementById('toggleFilters');
+
+            if (showMyTraffic) {
+                // mostra pulsante e mantiene pannello chiuso
+                openBtn.style.display = '';
+                panel.style.display = '';
+                panel.classList.remove('open');
+                panel.setAttribute('aria-hidden', 'true');
+                openBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                // nascondi tutto in Altro
+                openBtn.style.display = 'none';
+                panel.style.display = 'none';
+                panel.classList.remove('open');
+                panel.setAttribute('aria-hidden', 'true');
+                openBtn.setAttribute('aria-expanded', 'false');
+            }
+        }
+
+        function getSelectedNames() {
+            const selected = new Set();
+            document.querySelectorAll('.track-filter').forEach((cb) => {
+                if (cb.checked) selected.add(cb.dataset.name);
+            });
+            return selected;
+        }
+
+        // =========================
+        // Generazione link (FIX principale)
+        // =========================
+        function generateLinks() {
+            const mainLink = document.getElementById('mainLink').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            const container = document.getElementById('linksContainer');
+
+            errorMessage.innerHTML = '';
+            container.innerHTML = '';
+
+            // Validazione semplice
+            if (mainLink.includes(' ')) {
+                errorMessage.innerHTML = 'Errore: Il link non deve contenere spazi';
+                return;
+            }
+
+            if (showMyTraffic) {
+                // MyTraffic mode: pagine normali filtrate + MyTraffic + Emergency
+                const selectedNames = getSelectedNames();
+
+                pages.forEach((page) => {
+                    if (!selectedNames.has(page.name)) return;
+                    const link = `${mainLink}${page.param}`;
+                    const card = createLinkCard(page.name, link);
+                    container.appendChild(card);
+                });
+
+                // MyTraffic speciale
+                {
+                    const link = `${mainLink}${specialLink.param}`;
+                    const card = createLinkCard(specialLink.name, link, 'special-link-card');
+                    container.appendChild(card);
+                }
+
+                // Emergency (sempre mostrati, come negli originali)
+                emergencyLinks.forEach((obj) => {
+                    const link = `${mainLink}${obj.param}`;
+                    const card = createLinkCard(obj.name, link, 'emergency-link-card', true);
+                    container.appendChild(card);
+                });
+            } else {
+                // Altro mode: SOLO i 3 link (Sofia3, Ilda, Storia)
+                altroLinks.forEach((obj) => {
+                    const link = `${mainLink}${obj.param}`;
+                    const card = createLinkCard(obj.name, link, 'altro-link-card');
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        // =========================
+        // UI helpers
+        // =========================
+        function createLinkCard(title, link, extraClass = '', isEmergency = false) {
             const linkCard = document.createElement('div');
             linkCard.classList.add('link-card');
+            if (extraClass) linkCard.classList.add(extraClass);
 
-            // Titolo della pagina
-            const pageTitle = document.createElement('h4');
-            pageTitle.innerText = page.name;
-            linkCard.appendChild(pageTitle);
+            const h4 = document.createElement('h4');
+            h4.innerText = title;
+            const p = document.createElement('p');
+            p.innerText = link;
 
-            // Paragrafo con il link generato
-            const linkText = document.createElement('p');
-            linkText.innerText = link;
-            linkCard.appendChild(linkText);
+            const btn = document.createElement('button');
+            btn.classList.add('copy-btn');
+            btn.innerText = 'Copia';
+            btn.onclick = () =>
+                isEmergency
+                    ? confirmEmergencyCopy(link, btn, title)
+                    : copyToClipboard(link, btn);
 
-            // Pulsante "Copia"
-            const copyBtn = document.createElement('button');
-            copyBtn.classList.add('copy-btn');
-            copyBtn.innerText = 'Copia';
-            copyBtn.onclick = () => copyToClipboard(link, copyBtn);
-            linkCard.appendChild(copyBtn);
+            linkCard.appendChild(h4);
+            linkCard.appendChild(p);
+            linkCard.appendChild(btn);
 
-            // Aggiungiamo il div al contenitore principale
-            container.appendChild(linkCard);
-        });
-
-        // Sezione speciale per il link di MyTraffic
-        {
-            const specialLinkCard = document.createElement('div');
-            specialLinkCard.classList.add('link-card', 'special-link-card');
-
-            const specialTitle = document.createElement('h4');
-            specialTitle.innerText = specialLink.name;
-            specialLinkCard.appendChild(specialTitle);
-
-            const specialText = document.createElement('p');
-            specialText.innerText = `${mainLink}${specialLink.param}`;
-            specialLinkCard.appendChild(specialText);
-
-            const specialCopyBtn = document.createElement('button');
-
-            specialCopyBtn.classList.add('copy-btn');
-            specialCopyBtn.innerText = 'Copia';
-            specialCopyBtn.onclick = () => copyToClipboard(`${mainLink}${specialLink.param}`, specialCopyBtn);
-            specialLinkCard.appendChild(specialCopyBtn);
-
-            container.appendChild(specialLinkCard);
+            return linkCard;
         }
- 
-        // Aggiungiamo i link di emergenza da mostrare in base ai filtri
-        emergencyLinks.forEach(link => {
-            const cb = document.querySelector('#filter-' + slugify(link.name));
-            const isSelected = cb ? cb.checked : true; // se non ha checkbox (Papa, Test) => mostra
-            if (!isSelected) return;
-            const emergencyLink = `${mainLink}${link.param}`;
 
-            const emergencyCard = document.createElement('div');
-            emergencyCard.classList.add('link-card', 'emergency-link-card');
-
-            const emergencyTitle = document.createElement('h4');
-            emergencyTitle.innerText = link.name;
-            emergencyCard.appendChild(emergencyTitle);
-
-            const emergencyText = document.createElement('p');
-            emergencyText.innerText = emergencyLink;
-            emergencyCard.appendChild(emergencyText);
-
-            const emergencyCopyBtn = document.createElement('button');
-            emergencyCopyBtn.classList.add('copy-btn');
-            emergencyCopyBtn.innerText = 'Copia';
-            emergencyCopyBtn.onclick = () => confirmEmergencyCopy(emergencyLink, emergencyCopyBtn, link.name);
-            emergencyCard.appendChild(emergencyCopyBtn);
-
-            container.appendChild(emergencyCard);
-        });
-        
-        // Link finale di Gdonnoh - sempre visibile
-        const gdonnohLink = `${mainLink}${gdonnohTrack.param}`;
-        const gdonnohCard = document.createElement('div');
-        gdonnohCard.style.textAlign = 'center';
-        gdonnohCard.style.marginTop = '30px';
-
-        const gdonnohButton = document.createElement('button');
-        gdonnohButton.innerText = 'Copia il track di Sofia 3';
-        gdonnohButton.style.fontSize = '13px';
-        gdonnohButton.style.backgroundColor = '#444';
-        gdonnohButton.style.border = 'none';
-        gdonnohButton.style.padding = '8px 12px';
-        gdonnohButton.style.borderRadius = '5px';
-        gdonnohButton.style.color = 'white';
-        gdonnohButton.style.cursor = 'pointer';
-        gdonnohButton.onclick = () => copyToClipboard(gdonnohLink, gdonnohButton);
-
-        gdonnohCard.appendChild(gdonnohButton);
-        container.appendChild(gdonnohCard);
-
-    }
-
-    
-
-    function copyToClipboard(text, btn) {
-        navigator.clipboard.writeText(text).then(() => {
-            btn.innerText = 'Copiato!';
-            btn.classList.add('copied');
-            btn.disabled = true;
-        });
-    }
-
-    function confirmEmergencyCopy(link, btn, name) {
-        const isConfirmed = window.confirm(`Sei sicuro di voler copiare e usare il link per ${name}?`);
-        if (isConfirmed) {
-            copyToClipboard(link, btn);
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                btn.innerText = 'Copiato!';
+                btn.classList.add('copied');
+                btn.disabled = true;
+            });
         }
-    }
-</script>
 
+        function confirmEmergencyCopy(link, btn, name) {
+            const isConfirmed = window.confirm(
+                `Sei sicuro di voler copiare e usare il link per ${name}?`
+            );
+            if (isConfirmed) {
+                copyToClipboard(link, btn);
+            }
+        }
+
+        // =========================
+        // Sanity tests (console)
+        // =========================
+        function runSanityTests() {
+            try {
+                const assertions = [];
+                assertions.push(['generateLinks esiste', typeof generateLinks === 'function']);
+                assertions.push(['toggleFiltersVisibility esiste', typeof toggleFiltersVisibility === 'function']);
+                assertions.push(['buildFilters esiste', typeof buildFilters === 'function']);
+                assertions.push(['setupFiltersToggle esiste', typeof setupFiltersToggle === 'function']);
+
+                let allOk = true;
+                for (const [name, ok] of assertions) {
+                    if (!ok) {
+                        allOk = false;
+                        console.error('[TEST]', name, '✘');
+                    } else {
+                        console.info('[TEST]', name, '✔');
+                    }
+                }
+
+                // Test rapido visibilità filtri su toggle
+                const prev = showMyTraffic;
+                showMyTraffic = false;
+                toggleFiltersVisibility();
+                const hidden = document.getElementById('toggleFilters').style.display === 'none';
+                console[hidden ? 'info' : 'error'](
+                    '[TEST] filtri nascosti in Altro',
+                    hidden ? '✔' : '✘'
+                );
+                showMyTraffic = prev;
+                toggleFiltersVisibility();
+            } catch (e) {
+                console.error('Sanity tests error:', e);
+            }
+        }
+    </script>
 </body>
 </html>
-
