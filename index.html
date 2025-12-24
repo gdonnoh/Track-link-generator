@@ -308,11 +308,6 @@
     by: gdonnoh@gmail.com
     <div class="container">
         <h2>Track Link Generator</h2>
-        <div class="toggle-switch">
-            <label for="toggleMode">Altro</label>
-            <input type="checkbox" id="toggleMode" checked />
-            <label for="toggleMode">MyTraffic</label>
-        </div>
 
         <input type="text" id="mainLink" placeholder="Inserisci il link principale qui" />
         <button id="generateBtn" onclick="generateLinks()">Genera Links</button>
@@ -333,6 +328,7 @@
         class="floating-filters-btn"
         aria-expanded="false"
         aria-controls="filtersPanel"
+        style="display: none;"
     >
         Filtri
     </button>
@@ -341,23 +337,9 @@
         // =========================
         // Dati globali
         // =========================
-        const pages = [
-            { name: 'Sofia', param: '?utm_source=P0100&utm_medium=P0100_sofia&utm_campaign=P0100_sofia' },
-            { name: 'Raggio', param: '?utm_source=P0100&utm_medium=P0100_FF_raggiodisole&utm_campaign=P0100_FF_raggiodisole' },
-            { name: 'Sofia 2', param: '?utm_source=P0100&utm_medium=P0100_sofia2&utm_campaign=P0100_sofia2' },
-            { name: 'Sofia 4', param: '?utm_source=P0100&utm_medium=P0100_sofia4&utm_campaign=P0100_sofia4' },
-            { name: 'Sofia 5', param: '?utm_source=P0100&utm_medium=P0100_sofia5&utm_campaign=P0100_sofia5' },
-            { name: 'Sofia 6', param: '?utm_source=P0100&utm_medium=P0100_sofia6&utm_campaign=P0100_sofia6' },
-            { name: 'Mary', param: '?utm_source=P0100&utm_medium=P0100_FFmary&utm_campaign=P0100_FFmary' },
-            { name: 'Selune', param: '?utm_source=P0100&utm_medium=P0100_selune&utm_campaign=P0100_selune' },
-            { name: 'Incredibile', param: '?utm_source=P0100&utm_medium=P0100_FF_incredibile&utm_campaign=P0100_FF_incredibile' },
-            { name: 'Ilda', param: '?utm_source=P0100&utm_medium=P0100_FF_Ilda83&utm_campaign=P0100_FF_Ilda83' }
-        ];
+        const pages = [];
 
-        const specialLink = {
-            name: 'MyTraffic',
-            param: '?utm_source=P0100&utm_medium=P0100_xxFH&utm_campaign=P0100_xxFH',
-        };
+        const specialLink = null;
 
         const emergencyLinks = [
             { name: 'Papa', param: '?utm_source=P0100&utm_medium=P0100_FFpapa&utm_campaign=P0100_FFpapa' },
@@ -365,10 +347,7 @@
             { name: 'Giorno', param: '?utm_source=P0100&utm_medium=P0100_FF_giorno&utm_campaign=P0100_FF_giorno' },
         ];
 
-        const altroLinks = [
-            { name: 'Sofia3', param: '?utm_source=P0100&utm_medium=P0100_Sofia3&utm_campaign=P0100_Sofia3' },
-            { name: 'Storia', param: '?utm_source=P0100&utm_medium=P0100_FF_STORIA&utm_campaign=P0100_FF_STORIA' },
-        ];
+        const altroLinks = [];
 
         const FILTERS_STORAGE_KEY = 'tracklink_filters_v1';
         let showMyTraffic = true; // true => MyTraffic, false => Altro
@@ -379,16 +358,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             buildFilters();
             setupFiltersToggle();
-            toggleFiltersVisibility();
             // (Test non intrusivo) Sanity checks in console
             runSanityTests();
         });
 
-        document.getElementById('toggleMode').addEventListener('change', (e) => {
-            showMyTraffic = e.target.checked;
-            toggleFiltersVisibility();
-            // Non generiamo automaticamente: lasciamo che l'utente prema il bottone
-        });
 
         // =========================
         // Utilità filtri (sidebar)
@@ -419,44 +392,7 @@
         function buildFilters() {
             const filtersRoot = document.getElementById('filters');
             filtersRoot.innerHTML = '';
-
-            const filtersWrapper = document.createElement('div');
-            filtersWrapper.className = 'filters';
-
-            const saved = loadSavedFilters();
-
-            function addCheckbox(name) {
-                const id = `filter-${slugify(name)}`;
-                const wrap = document.createElement('div');
-                wrap.className = 'checkbox-item';
-
-                const cb = document.createElement('input');
-                cb.type = 'checkbox';
-                cb.className = 'track-filter';
-                cb.id = id;
-                cb.dataset.name = name;
-                cb.checked = saved ? saved.has(name) : true; // di default selezionato
-
-                const lbl = document.createElement('label');
-                lbl.htmlFor = id;
-                lbl.innerText = name;
-
-                wrap.appendChild(cb);
-                wrap.appendChild(lbl);
-                filtersWrapper.appendChild(wrap);
-            }
-
-            // A destra: tutti i track normali
-            pages.forEach((p) => addCheckbox(p.name));
-
-            filtersRoot.appendChild(filtersWrapper);
-
-            // Eventi: ogni change salva lo stato
-            filtersRoot.addEventListener('change', (e) => {
-                if (e.target && e.target.classList.contains('track-filter')) {
-                    saveFilters();
-                }
-            });
+            // Nessun filtro necessario, solo 3 link fissi
         }
 
         function setupFiltersToggle() {
@@ -499,24 +435,11 @@
         }
 
         function toggleFiltersVisibility() {
+            // Funzione mantenuta per compatibilità, ma non più necessaria
             const panel = document.getElementById('filtersPanel');
             const openBtn = document.getElementById('toggleFilters');
-
-            if (showMyTraffic) {
-                // mostra pulsante e mantiene pannello chiuso
-                openBtn.style.display = '';
-                panel.style.display = '';
-                panel.classList.remove('open');
-                panel.setAttribute('aria-hidden', 'true');
-                openBtn.setAttribute('aria-expanded', 'false');
-            } else {
-                // nascondi tutto in Altro
-                openBtn.style.display = 'none';
-                panel.style.display = 'none';
-                panel.classList.remove('open');
-                panel.setAttribute('aria-hidden', 'true');
-                openBtn.setAttribute('aria-expanded', 'false');
-            }
+            openBtn.style.display = 'none';
+            panel.style.display = 'none';
         }
 
         function getSelectedNames() {
@@ -544,38 +467,12 @@
                 return;
             }
 
-            if (showMyTraffic) {
-                // MyTraffic mode: pagine normali filtrate + MyTraffic + Emergency
-                const selectedNames = getSelectedNames();
-
-                pages.forEach((page) => {
-                    if (!selectedNames.has(page.name)) return;
-                    const link = `${mainLink}${page.param}`;
-                    const card = createLinkCard(page.name, link);
-                    container.appendChild(card);
-                });
-
-                // MyTraffic speciale
-                {
-                    const link = `${mainLink}${specialLink.param}`;
-                    const card = createLinkCard(specialLink.name, link, 'special-link-card');
-                    container.appendChild(card);
-                }
-
-                // Emergency (sempre mostrati, come negli originali)
-                emergencyLinks.forEach((obj) => {
-                    const link = `${mainLink}${obj.param}`;
-                    const card = createLinkCard(obj.name, link, 'emergency-link-card', true);
-                    container.appendChild(card);
-                });
-            } else {
-                // Altro mode: SOLO i 3 link (Sofia3, Ilda, Storia)
-                altroLinks.forEach((obj) => {
-                    const link = `${mainLink}${obj.param}`;
-                    const card = createLinkCard(obj.name, link, 'altro-link-card');
-                    container.appendChild(card);
-                });
-            }
+            // Mostra solo i 3 link: Papa, Test, Giorno
+            emergencyLinks.forEach((obj) => {
+                const link = `${mainLink}${obj.param}`;
+                const card = createLinkCard(obj.name, link, 'emergency-link-card', false);
+                container.appendChild(card);
+            });
         }
 
         // =========================
