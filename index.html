@@ -537,7 +537,15 @@
             }
 
             if (showMyTraffic) {
-                // MyTraffic mode: solo Papa, Test e Giorno
+                // MyTraffic mode: MyTraffic + Papa, Test e Giorno
+                // MyTraffic speciale
+                {
+                    const link = `${mainLink}${specialLink.param}`;
+                    const card = createLinkCard(specialLink.name, link, 'special-link-card');
+                    container.appendChild(card);
+                }
+
+                // Emergency (Papa, Test, Giorno)
                 emergencyLinks.forEach((obj) => {
                     const link = `${mainLink}${obj.param}`;
                     const card = createLinkCard(obj.name, link, 'emergency-link-card', false);
